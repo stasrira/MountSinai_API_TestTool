@@ -1,6 +1,21 @@
 Attribute VB_Name = "mdlMoTrPAC_API"
 Option Explicit
 
+'API settings
+Const API_UserName = "wakepass"
+Const API_Password = ""
+Const API_ContentType = "application/json"
+Const API_Accept = "application/json"
+Const API_URL = "https://www.motrpac.org/rest/motrpacapi/biospecimen/{BID}"
+
+'Excel worksheet settings
+Const Wks_Target = "API_Test"
+Const Num_Rec = "B3"
+Const Tbl_FirstCell = "A4"
+Const Msgbox_title = "MoTrPAC API"
+    
+
+
 Sub Test_RESTapi()
 
     Dim objRequest As Object
@@ -29,9 +44,7 @@ End Sub
 
 Public Sub Test_MoTrPAC_api()
     
-    Const Num_Rec = "B3"
-    Const Tbl_FirstCell = "A4"
-    Const API_URL = "https://www.motrpac.org/rest/motrpacapi/biospecimen/{BID}"
+    
     
     Dim objRequest As Object
     Dim strUrl As String
@@ -49,13 +62,11 @@ Public Sub Test_MoTrPAC_api()
     blnAsync = True
 
     With objRequest
-        .Open "GET", strUrl, blnAsync, "wakepass", ""
-        .SetRequestHeader "Content-Type", "application/json"
-        .SetRequestHeader "Accept", "application/json"
-        '.SetRequestHeader "Accept", "application/xml"
-        '.SetRequestHeader "Accept", "text/csv"
+        .Open "GET", strUrl, blnAsync, API_UserName, API_Password 'user name = wakepass;
+        .SetRequestHeader "Content-Type", API_ContentType '"application/json"
+        .SetRequestHeader "Accept", API_Accept '"application/json"; "application/xml"; "text/csv"
         .Send
-        'spin wheels whilst waiting for response
+        'wait for for response
         While objRequest.readyState <> 4
             DoEvents
         Wend
@@ -64,7 +75,7 @@ Public Sub Test_MoTrPAC_api()
         If Len(Trim(strResponse)) > 0 Then
             'clean area where to data will be posted.
             
-            With Worksheets("API_Test")
+            With Worksheets(Wks_Target) '"API_Test"
                 .Range(Num_Rec).Clear 'clean row count field
                 
                 'clean area of main table output
@@ -87,23 +98,23 @@ Public Sub Test_MoTrPAC_api()
                 'Report error
                 MsgBox "API service reported and error." & vbCrLf & _
                         "Error code: " & jsonResponse("errorCode") & vbCrLf & _
-                        "Message: " & jsonResponse("message"), vbCritical, "MoTrPAC API"
+                        "Message: " & jsonResponse("message"), vbCritical, Msgbox_title
             Else
                 'retrieve data
                 
-                Worksheets("API_Test").Range(Num_Rec).Value = jsonResponse.Items(0)("recordcount")
+                Worksheets(Wks_Target).Range(Num_Rec).Value = jsonResponse.Items(0)("recordcount")
                 cnt = 0
                 
                 For Each d In jsonResponse("data")
                     If cnt = 0 Then
                         'Print column headers
                         For i = 0 To d.Count - 1
-                            Worksheets("API_Test").Range(Tbl_FirstCell).Offset(0, i).Value = d.Keys(i)
+                            Worksheets(Wks_Target).Range(Tbl_FirstCell).Offset(0, i).Value = d.Keys(i)
                         Next
                     End If
                     
                     For i = 0 To d.Count - 1
-                        Worksheets("API_Test").Range(Tbl_FirstCell).Offset(cnt + 1, i).Value = d.Items(i)
+                        Worksheets(Wks_Target).Range(Tbl_FirstCell).Offset(cnt + 1, i).Value = d.Items(i)
         '                    Debug.Print d.Keys(i)
         '                    Debug.Print d.Items(i)
                     Next
@@ -111,12 +122,12 @@ Public Sub Test_MoTrPAC_api()
                     cnt = cnt + 1
                 Next
                 
-                'MsgBox "Data for BID " & Worksheets("API_Test").Range("B1").Value & " was successfully received.", vbInformation, "MoTrPAC API"
+                'MsgBox "Data for BID " & Worksheets(Wks_Target).Range("B1").Value & " was successfully received.", vbInformation, Msgbox_title
             End If
         
         Else
             'Report error
-            MsgBox "API service returned no response. Please verify that the Internet is available and the API's URL (" & strUrl & ") is reachable.", vbCritical, "MoTrPAC API"
+            MsgBox "API service returned no response. Please verify that the Internet is available and the API's URL (" & strUrl & ") is reachable.", vbCritical, Msgbox_title
         
         End If
         
