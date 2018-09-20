@@ -46,7 +46,7 @@ Public Sub Test_MoTrPAC_api()
     
     
     
-    Dim objRequest As Object
+    'Dim objRequest As Object
     Dim strUrl As String
     Dim blnAsync As Boolean
     Dim strResponse As String
@@ -54,20 +54,21 @@ Public Sub Test_MoTrPAC_api()
     Dim i As Integer, cnt As Integer
     Dim d As Dictionary
     Dim r As Range
+    Dim xmlhttp As New MSXML2.XMLHTTP60 'Requires to set reference (in Tools/Reference) to Microsoft XML, v6.0
     
-    Set objRequest = CreateObject("MSXML2.XMLHTTP")
+    'Set objRequest = CreateObject("MSXML2.XMLHTTP60")
     '''strUrl = "https://wakepass@www.motrpac.org/rest/motrpacapi/biospecimen/99901"
     'strUrl = "https://www.motrpac.org/rest/motrpacapi/biospecimen/99901"
     strUrl = Replace(API_URL, "{BID}", Worksheets("API_Test").Range("B1").Value)
     blnAsync = True
 
-    With objRequest
+    With xmlhttp 'objRequest
         .Open "GET", strUrl, blnAsync, API_UserName, API_Password 'user name = wakepass;
         .SetRequestHeader "Content-Type", API_ContentType '"application/json"
         .SetRequestHeader "Accept", API_Accept '"application/json"; "application/xml"; "text/csv"
         .Send
         'wait for for response
-        While objRequest.readyState <> 4
+        While xmlhttp.readyState <> 4
             DoEvents
         Wend
         strResponse = .ResponseText
