@@ -2,11 +2,11 @@ Attribute VB_Name = "mdlMoTrPAC_API"
 Option Explicit
 
 'API settings
-Const API_UserName = "wakepass"
-Const API_Password = ""
+Const API_UserName = "stas.rirak@mssm.edu" '"wakepass"
+Const API_Password = "BB846687-038A-D5BE-0509801DBBD95124"
 Const API_ContentType = "application/json"
 Const API_Accept = "application/json"
-Const API_URL = "https://www.motrpac.org/rest/motrpacapi/biospecimen/{BID}"
+Const API_URL = "https://www.motrpac.org/rest/motrpacapi/biospecimen/{MID}"
 
 'Excel worksheet settings
 Const Wks_Target = "API_Test"
@@ -42,7 +42,7 @@ Sub Test_RESTapi()
 
 End Sub
 
-Public Sub Test_MoTrPAC_api()
+Public Sub Test_MoTrPAC_api(MID As String)
     
     
     
@@ -59,7 +59,7 @@ Public Sub Test_MoTrPAC_api()
     'Set objRequest = CreateObject("MSXML2.XMLHTTP60")
     '''strUrl = "https://wakepass@www.motrpac.org/rest/motrpacapi/biospecimen/99901"
     'strUrl = "https://www.motrpac.org/rest/motrpacapi/biospecimen/99901"
-    strUrl = Replace(API_URL, "{BID}", Worksheets("API_Test").Range("B1").Value)
+    strUrl = Replace(API_URL, "{MID}", MID) 'Worksheets("API_Test").Range("B1").Value
     blnAsync = True
 
     With xmlhttp 'objRequest

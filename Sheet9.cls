@@ -10,7 +10,7 @@ Attribute VB_Exposed = True
 Private Sub Worksheet_Change(ByVal Target As Range)
 
     If Target.Address = "$B$1" Then
-        Test_MoTrPAC_api
+        Test_MoTrPAC_api (Target.Value2)
     End If
 
 End Sub
